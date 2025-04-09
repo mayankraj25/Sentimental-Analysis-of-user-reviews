@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Amazon Review Sentiment</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1 class="glow-heading">Amazon Review Sentiment</h1>
+    <textarea id="review" placeholder="Type your review here..."></textarea>
+    <button onclick="analyzeSentiment()">Analyze</button>
+    <div id="resultBox">
+      <h3 id="result"></h3>
+    </div>
+  </div>
+
+  <script>
+    async function analyzeSentiment() {
+      const review = document.getElementById("review").value.trim();
+      const result = document.getElementById("result");
+
+      if (!review) {
+        result.textContent = "Please enter a review.";
+        result.className = "warning-text";
+        return;
+      }
+
+      const response = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ review }),
+      });
+
+      const data = await response.json();
+      result.textContent = "Sentiment: " + data.sentiment;
+
+      result.className = "";
+      if (data.sentiment === "positive") {
+        result.classList.add("glow-positive");
+      } else if (data.sentiment === "negative") {
+        result.classList.add("glow-negative");
+      } else {
+        result.classList.add("neutral");
+      }
+    }
+  </script>
+</body>
+</html>
